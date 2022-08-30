@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% block title %}Home{% endblock title %}
+
+{% block body %}
+<div class="container">
+
+    
+<!-- <img src="/static/img/delete.png" width="50px" alt="" class="cursor-pointer"> -->
+    <!-- Button trigger modal -->
+    <button type="button" id="editBtn" class="btn btn-primary" data-bs-toggle="modal"
+        data-bs-target="#editModal" style="display: none;">View</button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="modal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Note</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="/editnote/" method="post"> {% csrf_token %}
+                        <input type="hidden" id="noteid" name="noteid">
+                        <div class="mb-3">
+                            <label for="title" class="form-label"><b>Title</b></label>
+                            <input type="text" class="form-control" id="modalTitle" name="modalTitle"
+                                placeholder="Title">
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label"><b>Description</b></label>
+                            <textarea class="form-control" id="modalDesc" name="modalDesc" rows="5"
+                                placeholder="Enter Description"></textarea>
+                        </div>
+                        <!-- <button type="submit" class="btn btn-primary">Add Note</button> -->
+                        <!-- <div class="modal-footer"> -->
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Save changes</button>
+                        <!-- </div> -->
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <h2 class="text-center my-2">Add Your Note Here</h2>
+    <form action="/addnote/" method="post" class="my-4"> {% csrf_token %}
+        <div class="mb-3">
+            <h4 for="title" class="form-label">Enter Title</h4>
+            <input type="text" class="form-control" id="title" name="title" placeholder="Title">
+        </div>
+        <div class="mb-3">
+            <h4 for="description" class="form-label">Enter Description</h4>
+            <textarea class="form-control" id="description" name="description" rows="5"
+                placeholder="Enter Description"></textarea>
+        </div>
+        {% if user.is_authenticated %}
+        <button type="submit" class="btn btn-primary">Add Note</button>
+        {% else %}
+        <i>First Login to Add Notes</i>
+        {% endif %}
+    </form>
+
+
+    <div class="container" id="allNotes">
+        <h2>Your Notes Here</h2>
+        <div class="row">
+
+            {% if user.is_authenticated %}
+            {% for note in allNotes %}
+            <div class="card mx-2 my-2" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title" id="title{{note.id}}">{{note.title}}</h5>
+                    <p class="card-text" id="desc{{note.id}}">{{note.description}}</p>     
+                    <button class="btn btn-primary btn-sm" onclick="editFunc({{note.id}})">Edit</button>            
+                    <a href="/deletenote/{{note.id}}" class="btn btn-primary btn-sm">Delete</a>
+                  
+                </div>
+            </div>
+            {% endfor %}
+            {% if allNotes|length == 0 %}
+                Nothing to show you
+            {% endif %}
+            {% else %}
+            <p><i>First Login to Show your Notes</i></p>
+            {% endif %}
+
+
+
+
+
+        </div>
+
+    </div>
+
+</div>
+
+{% block js %}
+<script>
+    function editFunc(id) {
+        console.log("Edit Button clicked with " + id);
+        title = document.getElementById('title' + id).innerText;
+        desc = document.getElementById('desc' + id).innerText;
+
+        noteid.value = id;
+        modalTitle.value = title;
+        modalDesc.value = desc;
+        editBtn.click()
+
+    }
+
+    function ram(){
+        console.log("ram ram");
+    }
+</script>
+{% endblock js %}
+
+{% endblock body %}
